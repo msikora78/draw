@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Test</title>
+
+		<script src="js/lib/jquery-2.0.0.js"></script>
+		<script src="js/lib/underscore.js"></script>
+		<script src="js/lib/backbone.js"></script>
+		
+		<style type="text/css">
+		</style>
+		<script type="application/javascript">
+			"use strict";
+			var obj = {};
+			function permutate(str,ch) {
+				if(!ch) obj = {}; 
+				ch = ch || "";
+				var len = str.length;
+				for (var i = 0; i < len; i++) {
+					var chr = str.charAt(i);
+					var substr =  str.substring(0,i) + str.substring(i+1,len);
+					
+					if(substr) {
+						permutate(substr,ch+chr)
+						
+				 		if(substr.length == 1) {
+				 			var res = [ch, chr, substr].join(",");
+				 			console.log(res);
+				 			obj[res] = true;
+				 		}						
+					} 
+				}				
+				
+				if(!ch){
+					console.log(Object.keys(obj).length);		
+				}
+			}
+			
+			
+		
+		</script>
+
+	</head>
+	<body>
+		
+	</body>
+</html>

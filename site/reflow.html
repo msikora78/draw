@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Reflow</title>
+
+		<script src="js/lib/jquery-2.0.0.js"></script>
+		<script src="js/lib/underscore.js"></script>
+		<script src="js/lib/backbone.js"></script>
+
+		
+		<style type="text/css">
+			body {
+				margin: 0;
+			}
+			
+			.btnDiv {
+			    position: fixed;
+				top:0;
+				right:0;
+				z-index:100;
+			}
+		
+
+			.fixedContent1
+			{
+			    position: fixed;
+			    background-color: red;
+			    border: 5px solid black;
+			    padding: 20px;
+			    z-index: 99;
+			}
+			
+			.fixedContent2
+			{
+			    position: fixed;
+			    background-color: green;
+			    border: 10px solid black;
+			    padding: 10px;
+			    z-index: 99;
+			}
+			
+			
+			.fixedContent3
+			{
+			    position: fixed;
+			    background-color: blue;
+			    border: 1px solid black;
+			    z-index: 99;
+			    border: 20px solid black;
+			    padding: 5px;
+			}
+			
+			
+			
+			.staticContent
+			{
+			    position: static;
+			    background-color: yellow;
+			    border: 3px solid black;
+			}
+			
+			#paddingDiv
+			{
+			    position: static;
+			    width:100%;
+			}
+
+		</style>
+		<script type="application/javascript">
+			
+		$(function(){
+			
+			var FIXED_CONTENT_LEVELS = 3;
+			var INCLUDE_MARGINS	= true;
+			
+			function reflow(){
+				console.time('reflow');
+				var currentTop = 0;
+				
+				for (var level = 1; level <= FIXED_CONTENT_LEVELS; level++) {
+				    var $elements = $('.fixedContent' + level + ':visible');
+				    var heights = _.map($elements, function (el) {
+				    	var $el = $(el);
+				    	$el.css('top', currentTop);
+				    	var height = $el.outerHeight(INCLUDE_MARGINS);
+				    	return height;
+				    });
+				    var maxHeight = Math.max.apply(null, heights);
+				    currentTop += maxHeight;
+				    // console.log('Max height for level', level, 'is', maxHeight );
+				}
+				$('#paddingDiv').height(currentTop);
+				console.timeEnd('reflow');				
+			}
+			
+			// var intervalID = window.setInterval(reflow, 100);
+			
+			function rand(max) {
+				return Math.floor(Math.random()*max);
+			}
+			
+			function randomizeFixed(count) {
+				for (var j = 0; j < count; j++){
+					for (var level = 1; level <= FIXED_CONTENT_LEVELS; level++) {
+						var className = 'fixedContent' + level;
+						var div = $('<div>')
+							.text(className)
+							.addClass(className)
+							.css({
+							    border: rand(20) + 'px solid black',
+							    padding: rand(20) + 'px',
+							    margin: rand(30) + 'px',
+							    top: rand(200) + 'px',
+	   						    left: rand(1200) + 'px',
+							    'min-width': rand(300) + 'px',
+	   						    'min-height': rand(100) + 'px',
+	   						    display: rand(5) ? 'none' : 'block'
+							});
+						$('#scrollContent').append(div);
+					}
+				}
+			}
+			
+			function randomizeStatic(count) {
+				for (var j = 0; j < count; j++){
+					var div = $('<div>')
+						.text("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+						.addClass('staticContent')
+						.css({
+						    border: rand(20) + 'px solid black',
+						    padding: rand(20) + 'px',
+						    margin: rand(20) + 'px',
+						    'min-width': rand(500) + 'px',
+   						    'min-height': rand(100) + 'px',
+   						    display: rand(5) ? 'none' : 'block'
+						});
+					$('#scrollContent').append(div);
+				}
+			}
+			
+			function randomize() {
+				$(window).scrollTop(0);				
+				$('#paddingDiv').height(0);				
+				$('#scrollContent').empty();
+				randomizeFixed(100);
+				randomizeStatic(200);
+			}
+			
+			function showHide() {
+				$('#scrollContent>div').each(function (i,el){
+					if(rand(5)) {
+						$(el).hide();
+					} else {
+						$(el).show();
+					}
+				});
+					
+			}
+			
+
+			$('#reflow').click(reflow);
+			$('#randomize').click(randomize);
+			$('#showHide').click(showHide);
+
+		});
+		
+		
+		
+		</script>
+
+	</head>
+	<body>
+		<div class="btnDiv" >
+			<button id="randomize">Randomize</button>
+			<button id="showHide">Show/Hide</button>
+			<button id="reflow">Reflow</button>
+		</div>
+		
+		<div id="paddingDiv" ></div>
+		
+		<div id="scrollContent" />
+		
+	</body>
+</html>
